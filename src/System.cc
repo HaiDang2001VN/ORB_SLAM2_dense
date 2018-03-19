@@ -25,6 +25,12 @@
 #include <thread>
 #include <pangolin/pangolin.h>
 #include <iomanip>
+#include <time.h>
+
+bool has_suffix(const std::string &str, const std::string &suffix) {
+  std::size_t index = str.find(suffix, str.size() - suffix.size());
+  return (index != std::string::npos);
+}
 
 namespace ORB_SLAM2
 {
@@ -61,8 +67,20 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
     //Load ORB Vocabulary
     cout << endl << "Loading ORB Vocabulary. This could take a while..." << endl;
 
+    clock_t tStart = clock();
     mpVocabulary = new ORBVocabulary();
-    bool bVocLoad = mpVocabulary->loadFromTextFile(strVocFile);
+    //bool bVocLoad = mpVocabulary->loadFromTextFile(strVocFile);
+    bool bVocLoad = false; // chose loading method based on file extension
+    if (has_suffix(strVocFile, ".txt"))
+	  {
+      bVocLoad = mpVocabulary->loadFromTextFile(strVocFile);
+      cout<<"Loaded from text"<<endl;
+    }
+	else
+  {
+	  bVocLoad = mpVocabulary->loadFromBinaryFile(strVocFile);
+    cout<<"Loaded from binary"<<endl;
+  }
     if(!bVocLoad)
     {
         cerr << "Wrong path to vocabulary. " << endl;
@@ -70,6 +88,7 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
         exit(-1);
     }
     cout << "Vocabulary loaded!" << endl << endl;
+    printf("Vocabulary loaded in %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
 
     //Create KeyFrame Database
     mpKeyFrameDatabase = new KeyFrameDatabase(*mpVocabulary);
@@ -119,7 +138,7 @@ cv::Mat System::TrackStereo(const cv::Mat &imLeft, const cv::Mat &imRight, const
     {
         cerr << "ERROR: you called TrackStereo but input sensor was not set to STEREO." << endl;
         exit(-1);
-    }   
+    }
 
     // Check mode change
     {
@@ -170,7 +189,7 @@ cv::Mat System::TrackRGBD(const cv::Mat &im, const cv::Mat &depthmap, const doub
     {
         cerr << "ERROR: you called TrackRGBD but input sensor was not set to RGBD." << endl;
         exit(-1);
-    }    
+    }
 
     // Check mode change
     {

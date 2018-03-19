@@ -99,6 +99,10 @@ target_link_libraries(stereo_euroc ${PROJECT_NAME})
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Examples/Monocular)
 
+add_executable(mono_dense
+Examples/Monocular/mono_dense.cc)
+target_link_libraries(mono_dense ${PROJECT_NAME})
+
 add_executable(mono_tum
 Examples/Monocular/mono_tum.cc)
 target_link_libraries(mono_tum ${PROJECT_NAME})
@@ -111,3 +115,6 @@ add_executable(mono_euroc
 Examples/Monocular/mono_euroc.cc)
 target_link_libraries(mono_euroc ${PROJECT_NAME})
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Tools)
+add_executable(binvocabulary Tools/binvocabulary.cc)
+target_link_libraries(binvocabulary ${PROJECT_NAME})
