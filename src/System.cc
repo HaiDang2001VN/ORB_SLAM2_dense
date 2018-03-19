@@ -71,16 +71,17 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
     mpVocabulary = new ORBVocabulary();
     //bool bVocLoad = mpVocabulary->loadFromTextFile(strVocFile);
     bool bVocLoad = false; // chose loading method based on file extension
-    if (has_suffix(strVocFile, ".txt"))
+    if (has_suffix(strVocFile, ".bin"))
 	  {
-      bVocLoad = mpVocabulary->loadFromTextFile(strVocFile);
-      cout<<"Loaded from text"<<endl;
+          bVocLoad = mpVocabulary->loadFromBinaryFile(strVocFile);
+    cout<<"Loaded from binary"<<endl;
     }
 	else
-  {
-	  bVocLoad = mpVocabulary->loadFromBinaryFile(strVocFile);
-    cout<<"Loaded from binary"<<endl;
-  }
+    {
+        bVocLoad = mpVocabulary->loadFromTextFile(strVocFile);
+      cout<<"Loaded from text"<<endl;
+	
+    }
     if(!bVocLoad)
     {
         cerr << "Wrong path to vocabulary. " << endl;
@@ -506,6 +507,11 @@ vector<cv::KeyPoint> System::GetTrackedKeyPointsUn()
 {
     unique_lock<mutex> lock(mMutexState);
     return mTrackedKeyPointsUn;
+}
+
+Map* System::GetMap()
+{
+    return mpMap;
 }
 
 } //namespace ORB_SLAM

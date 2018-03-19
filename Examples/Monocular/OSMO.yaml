@@ -5,18 +5,18 @@
 #--------------------------------------------------------------------------------------------
 #DJI OSMO
 # Camera calibration and distortion parameters (OpenCV)
-Camera.fx:  1350.48 # 2700.96 #450.16
-Camera.fy:  1353.12 # 2706.24 #601.39
-Camera.cx:  984.27 # 1968.54 #328.09
-Camera.cy:  553.88 # 1107.76 #246.17
+Camera.fx:   2700.96 #1350.48 #450.16
+Camera.fy:   2706.24 #1353.12 #601.39
+Camera.cx:   1968.54 #984.27 #328.09
+Camera.cy:   1107.76 #553.88 #246.17
 
 Camera.k1: 0
 Camera.k2: 0
 Camera.p1: 0.0
 Camera.p2: 0.0
 
-Camera.width: 1920 # 3840 #640
-Camera.height: 1080 #2160 #480
+Camera.width: 3840 #1920 #640
+Camera.height: 2160 #1080 #480
 
 # Camera frames per second
 Camera.fps: 30.0
@@ -38,7 +38,7 @@ DepthMapFactor: 1.0
 #--------------------------------------------------------------------------------------------
 
 # ORB Extractor: Number of features per image
-ORBextractor.nFeatures: 1500
+ORBextractor.nFeatures: 5000
 
 # ORB Extractor: Scale factor between levels in the scale pyramid
 ORBextractor.scaleFactor: 1.2
