@@ -57,7 +57,7 @@ public:
         STEREO=1,
         RGBD=2
     };
-
+    cv::FileStorage fsSettings;
 public:
 
     // Initialize the SLAM system. It launches the Local Mapping, Loop Closing and Viewer threads.
@@ -119,6 +119,11 @@ public:
     // LoadMap(const string &filename);
     
     Map* GetMap();
+
+    void CreatePCD(const string &filename);
+
+    void CreateNVM(const string &filename);
+
     // Information from most recent processed frame
     // You can call this right after TrackMonocular (or stereo or RGBD)
     int GetTrackingState();

@@ -22,6 +22,7 @@
 
 #include "System.h"
 #include "Converter.h"
+#include "Optimizer.h"
 #include <thread>
 #include <pangolin/pangolin.h>
 #include <iomanip>
@@ -31,6 +32,12 @@ bool has_suffix(const std::string &str, const std::string &suffix) {
   std::size_t index = str.find(suffix, str.size() - suffix.size());
   return (index != std::string::npos);
 }
+
+std::string formatInt(long num, int size) {
+  std::ostringstream oss;
+  oss << std::setfill('0') << std::setw(size) << num;
+  return oss.str();
+};
 
 namespace ORB_SLAM2
 {
@@ -57,6 +64,7 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
 
     //Check settings file
     cv::FileStorage fsSettings(strSettingsFile.c_str(), cv::FileStorage::READ);
+    this->fsSettings=fsSettings;
     if(!fsSettings.isOpened())
     {
        cerr << "Failed to open settings file at: " << strSettingsFile << endl;
@@ -339,7 +347,7 @@ void System::Shutdown()
     }
 
     if(mpViewer)
-        pangolin::BindToContext("ORB-SLAM2: Map Viewer");
+        //pangolin::BindToContext("ORB-SLAM2: Map Viewer");
 
     cout<<"All closed"<<endl;
 }
@@ -514,9 +522,182 @@ vector<cv::KeyPoint> System::GetTrackedKeyPointsUn()
     return mTrackedKeyPointsUn;
 }
 
-Map* System::GetMap()
+void System::CreateNVM(const string &filename)
 {
-    return mpMap;
+    //Global BA 
+    cout << "Starting GlobalBA!"<<endl;
+    Optimizer::GlobalBundleAdjustemnt(mpMap,50);
+    cout<<"BA Done"<<endl;
+    cout<<endl<<"Saving NVM to "<<filename<<"---"<<endl;
+    vector<MapPoint*> vMPs =mpMap->GetAllMapPoints();
+    vector<KeyFrame*> vpKFs=mpMap->GetAllKeyFrames();
+    sort(vpKFs.begin(),vpKFs.end(),KeyFrame::lId);
+        //--------------
+        //  Export the Poses and the Features to a NVM file
+        //--------------
+        //See http://ccwu.me/vsfm/doc.html#nvm for details about the file structure
+        ofstream f;
+        f.open(filename.c_str());
+        // fx cx fy cy;
+        f << "NVM_V3 \n";
+        //used for fixed cameras, but not supported yet by vsfm
+        //"_KFIXED " << (double)fsSettings["Camera.fx"] << " " << (double)fsSettings["Camera.fy"] << " " <<
+        //    (double)fsSettings["Camera.cx"] << " " << (double)fsSettings["Camera.cy"] << "\n";
+
+        //Now: the model:
+        //<Number of cameras>   <List of cameras>
+        //<Number of 3D points> <List of points>
+        //    <Camera> = <Image File name> <focal length> <quaternion WXYZ> <camera center> <radial distortion> 0
+        //    <Point>  = <XYZ> <RGB> <number of measurements> <List of Measurements>
+        //    with:
+        //<Measurement> = <Image index> <Feature Index> <xy>
+
+        //1.------ Exort the cameras
+        //1.1 count the amount of key frames
+        int count_good_KF=0;
+        for(size_t i=0; i<vpKFs.size(); i++)
+        {
+            KeyFrame* pKF = vpKFs[i];
+
+            if(pKF->isBad())
+                continue;
+            count_good_KF+=1;
+        }
+        cout<<count_good_KF<<"Good KFs";
+
+        f << count_good_KF << "\n"; //now, the list of cameras follows
+        
+        //1.2 export the camera parameters itself
+        //indexing of key frames by its consecutive number
+        std::map<int,int> kf_index;
+        int inc_frame_counter=-1;
+        for(size_t i=0; i<vpKFs.size(); i++)
+        {
+            KeyFrame* pKF = vpKFs[i];
+
+            if(pKF->isBad())
+                continue;
+            inc_frame_counter+=1;
+
+            cv::Mat R = pKF->GetRotation();//.t();
+            vector<float> q = ORB_SLAM2::Converter::toQuaternion(R);
+            cv::Mat t = pKF->GetCameraCenter();
+            kf_index[pKF->mnFrameId]=inc_frame_counter;
+            // Save KeyFrames as well
+            /*
+            cv::Mat temp= pKF->GetImage();
+            string kfstrFile;// = filename.c_str(); //set path for saving
+            ostringstream kfstrFilen;
+            kfstrFilen<<kfstrFile<<"frame"<<  formatInt(pKF->mnFrameId, 4) << ".jpg " ;
+            cout<<kfstrFilen.str()<<endl;
+            cv::imwrite(kfstrFilen.str(),temp);
+            cout<<"Saving image"<<i<<endl;
+            //
+            */
+            f << "frame"<<  formatInt(pKF->mnFrameId, 4) << ".jpg " << (double)fsSettings["Camera.fx"] << " " <<
+                q[3] << " " <<  q[0] << " " << q[1] << " " << q[2] << " " << //WXYZ
+                t.at<float>(0) << " " << t.at<float>(1) << " " << t.at<float>(2) << " " <<
+                (double)fsSettings["Camera.k1"] << " " << (double)fsSettings["Camera.k2"] << "\n";
+        }
+        f<< "\n";
+        //2. Export the 3D feature observations
+        //<Number of 3D points> <List of points>
+        //<Point>  = <XYZ> <RGB> <number of measurements> <List of Measurements>
+        //<Measurement> = <Image index> <Feature Index> <xy>
+
+        std::vector<MapPoint*> all_points=mpMap->GetAllMapPoints();
+        int count_good_map_points=0;
+        for(size_t i=0, iend=all_points.size(); i<iend;i++)
+        {
+            if (!(all_points[i]->isBad()))
+                count_good_map_points+=1;
+        }
+        cout<<"Good map points"<<count_good_map_points<<endl;
+        f << count_good_map_points << "\n";
+        for(size_t i=0, iend=all_points.size(); i<iend;i++)
+        {
+            if (all_points[i]->isBad())
+                continue;
+
+            MapPoint* pMP = all_points[i];
+            cv::Mat pos=pMP->GetWorldPos();
+            f << pos.at<float>(0) << " " << pos.at<float>(1) << " " << pos.at<float>(2) << " " <<
+            //rgb-Todo
+            "0 0 0 ";
+            //now all the observations/measurements
+            std::map<KeyFrame*,size_t> observations=pMP->GetObservations();
+            //count good observations:
+            int num_good_observations=0;
+            for (std::map<KeyFrame*,size_t>::iterator ob_it=observations.begin(); ob_it!=observations.end(); ob_it++)
+            {
+                if (!(*ob_it).first->isBad())
+                    num_good_observations+=1;
+            }
+
+            f << num_good_observations << " ";
+            for (std::map<KeyFrame*,size_t>::iterator ob_it=observations.begin(); ob_it!=observations.end(); ob_it++)
+            {
+                //skip if the key frame is "bad"
+                if ((*ob_it).first->isBad())
+                    continue;
+                //<Measurement> = <Image index> <Feature Index> <xy>
+                std::vector<cv::KeyPoint> key_points=(*ob_it).first->GetKeyPoints();
+                f << kf_index[(*ob_it).first->mnFrameId] << " " << (*ob_it).second << " " <<
+                key_points[ob_it->second].pt.x << " " <<
+                key_points[ob_it->second].pt.y << " ";
+            }
+            f << "\n";
+
+        }
+        f.close();
+    /////////////////////////////////
+    
+
+    
+}
+
+void System::CreatePCD(const string &filename)
+{
+  cout << endl << "Saving map points to " << filename << " ..." << endl;
+vector<MapPoint*> vMPs = mpMap->GetAllMapPoints();
+//create pcd initialization string
+  std::string begin = std::string("# .PCD v.7 - Point Cloud Data file format\nVERSION .7\n");
+  // add the fields:
+  begin += "FIELDS x y z\n";
+  // add the size (4 for float):
+  begin += "SIZE 4 4 4\n";
+  // add the type:
+  begin += "TYPE F F F\n";
+  // add the count(ammount of dimension (1 for x)):
+  begin += "COUNT 1 1 1\n";
+  // add the width:
+  int width = vMPs.size();
+  begin += "WIDTH ";
+  begin += std::to_string(width);
+  // add the height:
+  begin += "\nHEIGHT 1\n";
+  // add the viewpoint:
+  begin += "VIEWPOINT 0 0 0 1 0 0 0\n";
+  // add the amount of points:
+  begin += "POINTS ";
+  begin += std::to_string(width);
+  // add the datatype:
+  begin += "\nDATA ascii\n";
+//open the file
+  ofstream f;
+  f.open(filename.c_str());
+  // write the begin
+  f << begin;
+//write the points
+  for(size_t i=0; i<vMPs.size(); i++) {
+        MapPoint* pMP = vMPs[i];
+if(pMP->isBad())
+            continue;
+cv::Mat MPPositions = pMP->GetWorldPos();
+f << setprecision(7)<< MPPositions.at<float>(0) << " " << MPPositions.at<float>(1) << " " << MPPositions.at<float>(2) << endl;
+    }
+f.close();
+    cout << endl << "Map Points saved!" << endl;
 }
 
 } //namespace ORB_SLAM

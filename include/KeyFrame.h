@@ -53,7 +53,9 @@ public:
     cv::Mat GetStereoCenter();
     cv::Mat GetRotation();
     cv::Mat GetTranslation();
-
+    //For NVM
+    cv::Mat GetImage();
+    vector<cv::KeyPoint> GetKeyPoints() const;
     // Bag of Words Representation
     void ComputeBoW();
 

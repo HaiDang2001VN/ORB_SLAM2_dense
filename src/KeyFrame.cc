@@ -120,6 +120,18 @@ cv::Mat KeyFrame::GetTranslation()
     return Tcw.rowRange(0,3).col(3).clone();
 }
 
+cv::Mat KeyFrame::GetImage()
+{
+    //boost::mutex::scoped_lock lock(mMutexImage);
+   // return this->F->im;
+}
+
+vector<cv::KeyPoint> KeyFrame::GetKeyPoints() const
+{
+    return mvKeys;
+}
+
+
 void KeyFrame::AddConnection(KeyFrame *pKF, const int &weight)
 {
     {
