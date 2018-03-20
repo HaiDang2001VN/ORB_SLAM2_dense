@@ -320,8 +320,11 @@ void System::Reset()
 
 void System::Shutdown()
 {
+    cout<<"Shutting Down"<<endl;
     mpLocalMapper->RequestFinish();
+    cout<<"Mapper Shutdown"<<endl;
     mpLoopCloser->RequestFinish();
+    cout<<"Loop Closer Done"<<endl;
     if(mpViewer)
     {
         mpViewer->RequestFinish();
@@ -337,6 +340,8 @@ void System::Shutdown()
 
     if(mpViewer)
         pangolin::BindToContext("ORB-SLAM2: Map Viewer");
+
+    cout<<"All closed"<<endl;
 }
 
 void System::SaveTrajectoryTUM(const string &filename)
