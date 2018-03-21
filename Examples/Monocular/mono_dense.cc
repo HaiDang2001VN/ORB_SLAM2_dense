@@ -41,14 +41,14 @@ int main(int argc, char **argv)
     double tframe=0;
     while(cap.read(frame))
     {
-        if(tframe>1000)
+        if(tframe>50)
         {
             break;
         }
         //cout<<tframe<<endl;
         //cap>>frame;
         //cv::imshow("video",frame);
-        cv::resize(frame,rframe,cv::Size(1920,1080),0,0,CV_INTER_LANCZOS4);
+        //cv::resize(frame,rframe,cv::Size(1920,1080),0,0,CV_INTER_LANCZOS4);
 #ifdef COMPILEDWITHC11
         std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
         //auto t1 = std::chrono::system_clock::now();
@@ -57,7 +57,7 @@ int main(int argc, char **argv)
 #endif
 
         // Pass the image to the SLAM system
-        SLAM.TrackMonocular(rframe,tframe);
+        SLAM.TrackMonocular(frame,tframe);
 #ifdef COMPILEDWITHC11
         std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();
         //auto t2 = std::chrono::system_clock::now();
@@ -85,6 +85,8 @@ int main(int argc, char **argv)
     SLAM.CreatePCD("pointcloud.pcd");
 
     SLAM.CreateNVM("ORB_SLAM2.NVM");
+
+    //SLAM.DisplayKF(0);
 
     return 0;
 }

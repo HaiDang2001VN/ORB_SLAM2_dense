@@ -119,6 +119,7 @@ public:
     // LoadMap(const string &filename);
     
     Map* GetMap();
+    void DisplayKF(int KFid);
 
     void CreatePCD(const string &filename);
 

@@ -34,8 +34,8 @@
 
 namespace ORB_SLAM2
 {
-#define FRAME_GRID_ROWS 48
-#define FRAME_GRID_COLS 64
+#define FRAME_GRID_ROWS 108//48
+#define FRAME_GRID_COLS 192//64
 
 class MapPoint;
 class KeyFrame;
@@ -187,7 +187,8 @@ public:
 
     static bool mbInitialComputations;
 
-
+    // Image Itself
+    cv::Mat Frameim;
 private:
 
     // Undistort keypoints given OpenCV distortion parameters.

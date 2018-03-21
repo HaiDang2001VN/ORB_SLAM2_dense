@@ -584,16 +584,14 @@ void System::CreateNVM(const string &filename)
             cv::Mat t = pKF->GetCameraCenter();
             kf_index[pKF->mnFrameId]=inc_frame_counter;
             // Save KeyFrames as well
-            /*
             cv::Mat temp= pKF->GetImage();
-            string kfstrFile;// = filename.c_str(); //set path for saving
+            string kfstrFile=string("/KeyFrames/");// = filename.c_str(); //set path for saving
             ostringstream kfstrFilen;
             kfstrFilen<<kfstrFile<<"frame"<<  formatInt(pKF->mnFrameId, 4) << ".jpg " ;
             cout<<kfstrFilen.str()<<endl;
             cv::imwrite(kfstrFilen.str(),temp);
             cout<<"Saving image"<<i<<endl;
             //
-            */
             f << "frame"<<  formatInt(pKF->mnFrameId, 4) << ".jpg " << (double)fsSettings["Camera.fx"] << " " <<
                 q[3] << " " <<  q[0] << " " << q[1] << " " << q[2] << " " << //WXYZ
                 t.at<float>(0) << " " << t.at<float>(1) << " " << t.at<float>(2) << " " <<
@@ -655,7 +653,16 @@ void System::CreateNVM(const string &filename)
 
     
 }
-
+void System::DisplayKF(int KFid)
+{
+    vector<KeyFrame*> vKFs=mpMap->GetAllKeyFrames();
+    KeyFrame* temp=vKFs[KFid];
+    string temp2 = string("Keyframe");
+    temp2+=std::to_string(KFid);
+    cout<<temp2<<endl;
+    imshow(temp2,temp->GetImage());
+    cv::waitKey(5000); 
+}
 void System::CreatePCD(const string &filename)
 {
   cout << endl << "Saving map points to " << filename << " ..." << endl;

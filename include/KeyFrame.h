@@ -155,6 +155,8 @@ public:
     cv::Mat mTcwBefGBA;
     long unsigned int mnBAGlobalForKF;
 
+    //Image
+    cv::Mat KFim;
     // Calibration parameters
     const float fx, fy, cx, cy, invfx, invfy, mbf, mb, mThDepth;
 
@@ -184,6 +186,7 @@ public:
     const std::vector<float> mvInvLevelSigma2;
 
     // Image bounds and calibration
+    
     const int mnMinX;
     const int mnMinY;
     const int mnMaxX;
