@@ -585,7 +585,7 @@ void System::CreateNVM(const string &filename)
             kf_index[pKF->mnFrameId]=inc_frame_counter;
             // Save KeyFrames as well
             cv::Mat temp= pKF->GetImage();
-            string kfstrFile=string("/KeyFrames/");// = filename.c_str(); //set path for saving
+            string kfstrFile;// = filename.c_str(); //set path for saving
             ostringstream kfstrFilen;
             kfstrFilen<<kfstrFile<<"frame"<<  formatInt(pKF->mnFrameId, 4) << ".jpg " ;
             cout<<kfstrFilen.str()<<endl;

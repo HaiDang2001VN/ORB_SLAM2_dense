@@ -41,10 +41,6 @@ int main(int argc, char **argv)
     double tframe=0;
     while(cap.read(frame))
     {
-        if(tframe>50)
-        {
-            break;
-        }
         //cout<<tframe<<endl;
         //cap>>frame;
         //cv::imshow("video",frame);
@@ -84,7 +80,7 @@ int main(int argc, char **argv)
 
     SLAM.CreatePCD("pointcloud.pcd");
 
-    SLAM.CreateNVM("ORB_SLAM2.NVM");
+    SLAM.CreateNVM("ORB_SLAM2.nvm");
 
     //SLAM.DisplayKF(0);
 
