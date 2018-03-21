@@ -108,6 +108,9 @@ public:
     // Frame timestamp.
     double mTimeStamp;
 
+    // Image Itself
+    cv::Mat Frameim;
+    
     // Calibration matrix and OpenCV distortion parameters.
     cv::Mat mK;
     static float fx;
@@ -187,8 +190,7 @@ public:
 
     static bool mbInitialComputations;
 
-    // Image Itself
-    cv::Mat Frameim;
+    
 private:
 
     // Undistort keypoints given OpenCV distortion parameters.

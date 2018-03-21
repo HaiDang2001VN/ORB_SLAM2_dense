@@ -43,8 +43,9 @@ KeyFrame::KeyFrame(Frame &F, Map *pMap, KeyFrameDatabase *pKFDB):
     mpORBvocabulary(F.mpORBvocabulary), mbFirstConnection(true), mpParent(NULL), mbNotErase(false),
     mbToBeErased(false), mbBad(false), mHalfBaseline(F.mb/2), mpMap(pMap)
 {
+    //cout<<mnFrameId<<endl;
+    //cout<<F.Frameim.empty()<<endl;
     mnId=nNextId++;
-
     mGrid.resize(mnGridCols);
     for(int i=0; i<mnGridCols;i++)
     {
@@ -122,7 +123,7 @@ cv::Mat KeyFrame::GetTranslation()
 
 cv::Mat KeyFrame::GetImage()
 {
-    return KFim.clone();
+    return KFim;
 }
 vector<cv::KeyPoint> KeyFrame::GetKeyPoints() const
 {

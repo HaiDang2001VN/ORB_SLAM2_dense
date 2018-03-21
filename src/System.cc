@@ -526,12 +526,12 @@ void System::CreateNVM(const string &filename)
 {
     //Global BA 
     cout << "Starting GlobalBA!"<<endl;
-    Optimizer::GlobalBundleAdjustemnt(mpMap,50);
+    Optimizer::GlobalBundleAdjustemnt(mpMap,20);
     cout<<"BA Done"<<endl;
     cout<<endl<<"Saving NVM to "<<filename<<"---"<<endl;
     vector<MapPoint*> vMPs =mpMap->GetAllMapPoints();
     vector<KeyFrame*> vpKFs=mpMap->GetAllKeyFrames();
-    sort(vpKFs.begin(),vpKFs.end(),KeyFrame::lId);
+    //sort(vpKFs.begin(),vpKFs.end(),KeyFrame::lId);
         //--------------
         //  Export the Poses and the Features to a NVM file
         //--------------
@@ -563,10 +563,10 @@ void System::CreateNVM(const string &filename)
                 continue;
             count_good_KF+=1;
         }
-        cout<<count_good_KF<<"Good KFs";
+        cout<<count_good_KF<<" Good KFs"<<endl;
 
         f << count_good_KF << "\n"; //now, the list of cameras follows
-        
+        f<< endl;
         //1.2 export the camera parameters itself
         //indexing of key frames by its consecutive number
         std::map<int,int> kf_index;
@@ -585,17 +585,20 @@ void System::CreateNVM(const string &filename)
             kf_index[pKF->mnFrameId]=inc_frame_counter;
             // Save KeyFrames as well
             cv::Mat temp= pKF->GetImage();
-            string kfstrFile;// = filename.c_str(); //set path for saving
-            ostringstream kfstrFilen;
-            kfstrFilen<<kfstrFile<<"frame"<<  formatInt(pKF->mnFrameId, 4) << ".jpg " ;
-            cout<<kfstrFilen.str()<<endl;
-            cv::imwrite(kfstrFilen.str(),temp);
-            cout<<"Saving image"<<i<<endl;
-            //
-            f << "frame"<<  formatInt(pKF->mnFrameId, 4) << ".jpg " << (double)fsSettings["Camera.fx"] << " " <<
+            //if(!temp.empty())
+            //{
+                string kfstrFile;// = filename.c_str(); //set path for saving
+                ostringstream kfstrFilen;
+                kfstrFilen<<kfstrFile<<"frame"<<  formatInt(pKF->mnFrameId, 4) << ".jpg" ;
+                cout<<kfstrFilen.str()<<endl;
+                cv::imwrite(kfstrFilen.str(),temp);
+                cout<<"Saving image"<<i<<endl;
+                //
+                f << "frame"<<  formatInt(pKF->mnFrameId, 4) << ".jpg " << (double)fsSettings["Camera.fx"] << " " <<
                 q[3] << " " <<  q[0] << " " << q[1] << " " << q[2] << " " << //WXYZ
                 t.at<float>(0) << " " << t.at<float>(1) << " " << t.at<float>(2) << " " <<
                 (double)fsSettings["Camera.k1"] << " " << (double)fsSettings["Camera.k2"] << "\n";
+            //}
         }
         f<< "\n";
         //2. Export the 3D feature observations

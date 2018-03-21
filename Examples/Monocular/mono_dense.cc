@@ -8,6 +8,7 @@ Application for producing an NVM file for use with Visual SFM and MVE.
 #include<algorithm>
 #include<fstream>
 #include<chrono>
+#include<cstdlib> //For system calls
 
 #include<opencv2/core/core.hpp>
 #include<System.h>
@@ -41,10 +42,14 @@ int main(int argc, char **argv)
     double tframe=0;
     while(cap.read(frame))
     {
+        if(tframe>50)
+        {
+            break;
+        }
         //cout<<tframe<<endl;
         //cap>>frame;
         //cv::imshow("video",frame);
-        //cv::resize(frame,rframe,cv::Size(1920,1080),0,0,CV_INTER_LANCZOS4);
+        cv::resize(frame,rframe,cv::Size(1920,1080),0,0,CV_INTER_LANCZOS4);
 #ifdef COMPILEDWITHC11
         std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
         //auto t1 = std::chrono::system_clock::now();
@@ -83,6 +88,7 @@ int main(int argc, char **argv)
     SLAM.CreateNVM("ORB_SLAM2.nvm");
 
     //SLAM.DisplayKF(0);
+    //Now for calling MVE
 
     return 0;
 }
