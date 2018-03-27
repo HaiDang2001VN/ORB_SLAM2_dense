@@ -1,8 +1,14 @@
-TODO:
-> Save as NVM file for dense reconstruction.(https://github.com/mojovski/ORB_SLAM2) 
-> Save Map as PLY.
-> Load Map as PLY and relocalize within it.
- 
+# Changelog and TODO:
+> Save as NVM file for dense reconstruction.(https://github.com/mojovski/ORB_SLAM2) -Done \
+> Save Map as PLY -Done \
+> Load Map and relocalize within it. -Done \
+> Add Loaders for OBJ,PCD,NVM\
+
+
+# Generating NVM and PCD File Output  
+```
+./mono_dense path_to_vocabulary path_to_settings path_to_video
+```
 # ORB-SLAM2
 **Authors:** [Raul Mur-Artal](http://webdiis.unizar.es/~raulmur/), [Juan D. Tardos](http://webdiis.unizar.es/~jdtardos/), [J. M. M. Montiel](http://webdiis.unizar.es/~josemari/) and [Dorian Galvez-Lopez](http://doriangalvez.com/) ([DBoW2](https://github.com/dorian3d/DBoW2))
 
