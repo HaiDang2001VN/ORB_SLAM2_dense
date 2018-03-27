@@ -34,8 +34,8 @@
 
 namespace ORB_SLAM2
 {
-#define FRAME_GRID_ROWS 108//48
-#define FRAME_GRID_COLS 192//64
+#define FRAME_GRID_ROWS 216
+#define FRAME_GRID_COLS 384
 
 class MapPoint;
 class KeyFrame;

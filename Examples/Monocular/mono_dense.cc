@@ -12,7 +12,7 @@ Application for producing an NVM file for use with Visual SFM and MVE.
 
 #include<opencv2/core/core.hpp>
 #include<System.h>
-#include<Optimizer.h>
+//#include<Optimizer.h>
 using namespace std;
 
 int main(int argc, char **argv)
@@ -42,14 +42,10 @@ int main(int argc, char **argv)
     double tframe=0;
     while(cap.read(frame))
     {
-        if(tframe>50)
-        {
-            break;
-        }
         //cout<<tframe<<endl;
         //cap>>frame;
         //cv::imshow("video",frame);
-        cv::resize(frame,rframe,cv::Size(1920,1080),0,0,CV_INTER_LANCZOS4);
+        //cv::resize(frame,rframe,cv::Size(1920,1080),0,0,CV_INTER_LANCZOS4);
 #ifdef COMPILEDWITHC11
         std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
         //auto t1 = std::chrono::system_clock::now();
@@ -66,8 +62,8 @@ int main(int argc, char **argv)
         std::chrono::monotonic_clock::time_point t2 = std::chrono::monotonic_clock::now();
 #endif
         std::chrono::duration<double, std::milli> fp_ms1 = t2 - t1;
-        if(int(tframe)%10==0)
-            cout<<"Frame: "<<tframe<<" finished in "<<fp_ms1.count() << " ms" << std::endl;
+        if(int(tframe)%50==0)
+        cout<<"Frame: "<<tframe<<" finished in "<<fp_ms1.count() << " ms" << std::endl;
         tframe++;
         //cv::waitKey(1);
         //usleep(1000);
@@ -81,11 +77,11 @@ int main(int argc, char **argv)
 
     cout<<"Saving Trajectory to file"<<endl;
     // Save camera trajectory
-    SLAM.SaveKeyFrameTrajectoryTUM("KeyFrameTrajectory.txt");
+    //SLAM.SaveKeyFrameTrajectoryTUM("KeyFrameTrajectory.txt");
 
-    SLAM.CreatePCD("pointcloud.pcd");
+    //SLAM.CreatePCD("pointcloud15k.pcd");
 
-    SLAM.CreateNVM("ORB_SLAM2.nvm");
+    //SLAM.CreateNVM("ORB_SLAM2.nvm");
 
     //SLAM.DisplayKF(0);
     //Now for calling MVE

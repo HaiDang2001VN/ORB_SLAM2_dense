@@ -570,6 +570,8 @@ void System::CreateNVM(const string &filename)
         //1.2 export the camera parameters itself
         //indexing of key frames by its consecutive number
         std::map<int,int> kf_index;
+        std::vector<int> params;
+        params.push_back(100);
         int inc_frame_counter=-1;
         for(size_t i=0; i<vpKFs.size(); i++)
         {
@@ -591,7 +593,7 @@ void System::CreateNVM(const string &filename)
                 ostringstream kfstrFilen;
                 kfstrFilen<<kfstrFile<<"frame"<<  formatInt(pKF->mnFrameId, 4) << ".jpg" ;
                 cout<<kfstrFilen.str()<<endl;
-                cv::imwrite(kfstrFilen.str(),temp);
+                cv::imwrite(kfstrFilen.str(),temp,params);
                 cout<<"Saving image"<<i<<endl;
                 //
                 f << "frame"<<  formatInt(pKF->mnFrameId, 4) << ".jpg " << (double)fsSettings["Camera.fx"] << " " <<
