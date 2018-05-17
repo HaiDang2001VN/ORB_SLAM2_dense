@@ -125,6 +125,12 @@ cv::Mat KeyFrame::GetImage()
 {
     return KFim;
 }
+
+void KeyFrame::SetImage(cv::Mat &image)
+{
+    KFim=image.clone();
+}
+
 vector<cv::KeyPoint> KeyFrame::GetKeyPoints() const
 {
     return mvKeys;

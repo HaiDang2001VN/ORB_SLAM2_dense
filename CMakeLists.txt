@@ -2,12 +2,12 @@ cmake_minimum_required(VERSION 2.8)
 project(ORB_SLAM2)
 
 IF(NOT CMAKE_BUILD_TYPE)
-  SET(CMAKE_BUILD_TYPE Release)
+  SET(CMAKE_BUILD_TYPE Debug)
 ENDIF()
 
 MESSAGE("Build type: " ${CMAKE_BUILD_TYPE})
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -Wall  -O3 -march=native ")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -Wall  -O3 -march=native")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall   -O3 -march=native")
 
 # Check C++11 or C++0x support
@@ -98,6 +98,10 @@ ${PROJECT_SOURCE_DIR}/Thirdparty/g2o/lib/libg2o.so
 
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Examples/Monocular)
+
+add_executable(mono_nvm_load
+Examples/Monocular/mono_nvm_load.cc)
+target_link_libraries(mono_nvm_load ${PROJECT_NAME})
 
 add_executable(mono_dense_images
 Examples/Monocular/mono_dense_images.cc)

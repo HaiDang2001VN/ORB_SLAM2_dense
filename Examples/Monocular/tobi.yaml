@@ -19,7 +19,7 @@ Camera.width: 1920 #640
 Camera.height: 1080 #480
 
 # Camera frames per second
-Camera.fps: 30.0
+Camera.fps: 1.0
 
 # IR projector baseline times fx (aprox.)
 Camera.bf: 40.0
@@ -38,7 +38,7 @@ DepthMapFactor: 1.0
 #--------------------------------------------------------------------------------------------
 
 # ORB Extractor: Number of features per image
-ORBextractor.nFeatures: 10000
+ORBextractor.nFeatures: 8000
 
 # ORB Extractor: Scale factor between levels in the scale pyramid
 ORBextractor.scaleFactor: 1.2
@@ -50,8 +50,8 @@ ORBextractor.nLevels: 16
 # Image is divided in a grid. At each cell FAST are extracted imposing a minimum response.
 # Firstly we impose iniThFAST. If no corners are detected we impose a lower value minThFAST
 # You can lower these values if your images have low contrast
-ORBextractor.iniThFAST: 20
-ORBextractor.minThFAST: 5
+ORBextractor.iniThFAST: 18
+ORBextractor.minThFAST: 3
 
 # ORB Extractor: Score to sort features. 0 -> Harris Score, 1 -> FAST Score
 ORBextractor.nScoreType: 1

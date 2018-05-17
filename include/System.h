@@ -123,7 +123,9 @@ public:
 
     void CreatePCD(const string &filename);
 
-    void CreateNVM(const string &filename);
+    void SaveNVM(const string &filename);
+
+    bool LoadNVM(const string &filename);
 
     // Information from most recent processed frame
     // You can call this right after TrackMonocular (or stereo or RGBD)

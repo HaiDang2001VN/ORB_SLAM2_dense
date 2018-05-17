@@ -23,11 +23,13 @@ build/
 lib/
 
 Video/DJI_0128.MOV
+*.vscode
 .vscode/launch.json
 *.jpg
 *.png
 *.ini
 *.MOV
+*.mp4
 chairtest.zip
 ORB_SLAM2_dense.zip
 ORB_SLAM2_dense_chairtest.zip

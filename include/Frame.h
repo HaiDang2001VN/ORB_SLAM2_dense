@@ -34,8 +34,8 @@
 
 namespace ORB_SLAM2
 {
-#define FRAME_GRID_ROWS 216
-#define FRAME_GRID_COLS 384
+#define FRAME_GRID_ROWS 108
+#define FRAME_GRID_COLS 192
 
 class MapPoint;
 class KeyFrame;
@@ -56,6 +56,9 @@ public:
 
     // Constructor for Monocular cameras.
     Frame(const cv::Mat &imGray, const double &timeStamp, ORBextractor* extractor,ORBVocabulary* voc, cv::Mat &K, cv::Mat &distCoef, const float &bf, const float &thDepth);
+
+    //Constructor for RGB saving with Monocular
+    Frame(const cv::Mat &imGray, const double &timeStamp, ORBextractor *extractor, ORBVocabulary *voc, cv::Mat &K, cv::Mat &distCoef, const float &bf, const float &thDepth, const cv::Mat &imRGB);
 
     // Extract ORB on the image. 0 for left image and 1 for right image.
     void ExtractORB(int flag, const cv::Mat &im);

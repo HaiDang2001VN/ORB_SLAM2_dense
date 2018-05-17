@@ -56,6 +56,7 @@ public:
     //For NVM
     cv::Mat GetImage();
     vector<cv::KeyPoint> GetKeyPoints() const;
+    void SetImage(cv::Mat &image);
     // Bag of Words Representation
     void ComputeBoW();
 

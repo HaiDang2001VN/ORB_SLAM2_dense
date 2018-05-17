@@ -34,6 +34,8 @@ std::vector<cv::Mat> Converter::toDescriptorVector(const cv::Mat &Descriptors)
     return vDesc;
 }
 
+
+
 g2o::SE3Quat Converter::toSE3Quat(const cv::Mat &cvT)
 {
     Eigen::Matrix<double,3,3> R;
@@ -146,6 +148,19 @@ std::vector<float> Converter::toQuaternion(const cv::Mat &M)
     v[3] = q.w();
 
     return v;
+}
+
+cv::Mat Converter::toRotation(const std::vector<float> &q)
+{
+    Eigen::Quaterniond Q;
+    Q.w() = q[3];
+    Q.x() = q[0];
+    Q.y() = q[1];
+    Q.z() = q[2];
+
+    Eigen::Matrix<double,3,3> R=Q.normalized().toRotationMatrix();
+
+    return toCvMat(R);
 }
 
 } //namespace ORB_SLAM

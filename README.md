@@ -1,8 +1,11 @@
-# Changelog and TODO:
+# Changelog:
 > Save as NVM file for dense reconstruction.(https://github.com/mojovski/ORB_SLAM2) -Done \
 > Save Map as PLY -Done \
 > Load Map and relocalize within it. -Done \
+
+# TODO:
 > Add Loaders for OBJ,PCD,NVM\
+> Merge serialization based map save, load\
 
 
 # Generating NVM and PCD File Output  

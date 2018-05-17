@@ -236,7 +236,7 @@ bool LoopClosing::ComputeSim3()
 
     // We compute first ORB matches for each candidate
     // If enough matches are found, we setup a Sim3Solver
-    ORBmatcher matcher(0.70,true);
+    ORBmatcher matcher(0.75,true);
 
     vector<Sim3Solver*> vpSim3Solvers;
     vpSim3Solvers.resize(nInitialCandidates);
@@ -292,13 +292,13 @@ bool LoopClosing::ComputeSim3()
 
             KeyFrame* pKF = mvpEnoughConsistentCandidates[i];
 
-            // Perform 5 Ransac Iterations
+            // Perform 10 Ransac Iterations
             vector<bool> vbInliers;
             int nInliers;
             bool bNoMore;
 
             Sim3Solver* pSolver = vpSim3Solvers[i];
-            cv::Mat Scm  = pSolver->iterate(5,bNoMore,vbInliers,nInliers);
+            cv::Mat Scm  = pSolver->iterate(10,bNoMore,vbInliers,nInliers);
 
             // If Ransac reachs max. iterations discard keyframe
             if(bNoMore)

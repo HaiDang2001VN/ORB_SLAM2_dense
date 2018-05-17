@@ -24,7 +24,7 @@ int main(int argc, char **argv)
     }
 
     vector<cv::String> fn;
-    glob(string(argv[3])+"/*.JPG", fn, false);
+    glob(string(argv[3])+"/*.jpg", fn, false);
     // Create SLAM system. It initializes all system threads and gets ready to process frames.
     ORB_SLAM2::System SLAM(argv[1],argv[2],ORB_SLAM2::System::MONOCULAR,true);
 
@@ -39,7 +39,7 @@ int main(int argc, char **argv)
         // Read image from file
         frame = cv::imread(fn[ni],CV_LOAD_IMAGE_UNCHANGED);
         //double tframe = ni;
-        //cv::resize(frame,rframe,cv::Size(1920,1080),0,0,CV_INTER_LANCZOS4);
+        //cv::resize(frame,rframe,cv::Size(3840,2160),0,0,CV_INTER_LANCZOS4);
 #ifdef COMPILEDWITHC11
         std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
         //auto t1 = std::chrono::system_clock::now();
@@ -57,9 +57,9 @@ int main(int argc, char **argv)
 #endif
         std::chrono::duration<double, std::milli> fp_ms1 = t2 - t1;
         if(int(tframe)%50==0)
-        cout<<"Frame: "<<tframe<<" finished in "<<fp_ms1.count() << " ms" << std::endl;
-        tframe++;
-        //cv::waitKey(1);
+        //cout<<"Frame: "<<tframe<<" finished in "<<fp_ms1.count() << " ms" << std::endl;
+        tframe+=0.04;
+        cv::waitKey(400);
         //usleep(1000);
     }
     //Done with the Video
@@ -69,7 +69,7 @@ int main(int argc, char **argv)
     // Stop all threads
     SLAM.Shutdown();
 
-    cout<<"Saving Trajectory to file"<<endl;
+    //cout<<"Saving Trajectory to file"<<endl;
     // Save camera trajectory
     //SLAM.SaveKeyFrameTrajectoryTUM("KeyFrameTrajectory.txt");
 

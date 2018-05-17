@@ -145,7 +145,7 @@ Tracking::Tracking(System *pSys, ORBVocabulary* pVoc, FrameDrawer *pFrameDrawer,
         else
             mDepthMapFactor = 1.0f/mDepthMapFactor;
     }
-
+    
 }
 
 void Tracking::SetLocalMapper(LocalMapping *pLocalMapper)
@@ -238,7 +238,7 @@ cv::Mat Tracking::GrabImageRGBD(const cv::Mat &imRGB,const cv::Mat &imD, const d
 cv::Mat Tracking::GrabImageMonocular(const cv::Mat &im, const double &timestamp)
 {
     mImGray = im;
-
+    mImRGB = im; //for saving RGB
     if(mImGray.channels()==3)
     {
         if(mbRGB)
@@ -255,9 +255,9 @@ cv::Mat Tracking::GrabImageMonocular(const cv::Mat &im, const double &timestamp)
     }
 
     if(mState==NOT_INITIALIZED || mState==NO_IMAGES_YET)
-        mCurrentFrame = Frame(mImGray,timestamp,mpIniORBextractor,mpORBVocabulary,mK,mDistCoef,mbf,mThDepth);
+        mCurrentFrame = Frame(mImGray,timestamp,mpIniORBextractor,mpORBVocabulary,mK,mDistCoef,mbf,mThDepth,mImRGB);
     else
-        mCurrentFrame = Frame(mImGray,timestamp,mpORBextractorLeft,mpORBVocabulary,mK,mDistCoef,mbf,mThDepth);
+        mCurrentFrame = Frame(mImGray, timestamp, mpORBextractorLeft, mpORBVocabulary, mK, mDistCoef, mbf, mThDepth, mImRGB);
 
     Track();
     return mCurrentFrame.mTcw.clone();
@@ -302,7 +302,7 @@ void Tracking::Track()
             {
                 // Local Mapping might have changed some MapPoints tracked in last frame
                 CheckReplacedInLastFrame();
-                /* Removing Motion Model Dependency
+                //Removing Motion Model Dependency
                 if(mVelocity.empty() || mCurrentFrame.mnId<mnLastRelocFrameId+2)
                 {
                     bOK = TrackReferenceKeyFrame();
@@ -313,8 +313,7 @@ void Tracking::Track()
                     if(!bOK)
                         bOK = TrackReferenceKeyFrame();
                 }
-                */
-                bOK= TrackReferenceKeyFrame();
+                //bOK= TrackReferenceKeyFrame();
             }
             else
             {
@@ -762,7 +761,7 @@ bool Tracking::TrackReferenceKeyFrame()
 
     // We perform first an ORB matching with the reference keyframe
     // If enough matches are found we setup a PnP solver
-    ORBmatcher matcher(0.75,true);
+    ORBmatcher matcher(0.8,true);
     vector<MapPoint*> vpMapPointMatches;
 
     int nmatches = matcher.SearchByBoW(mpReferenceKF,mCurrentFrame,vpMapPointMatches);
@@ -1283,7 +1282,7 @@ void Tracking::UpdateLocalKeyFrames()
     for(vector<KeyFrame*>::const_iterator itKF=mvpLocalKeyFrames.begin(), itEndKF=mvpLocalKeyFrames.end(); itKF!=itEndKF; itKF++)
     {
         // Limit the number of keyframes
-        if(mvpLocalKeyFrames.size()>80)
+        if(mvpLocalKeyFrames.size()>100)
             break;
 
         KeyFrame* pKF = *itKF;

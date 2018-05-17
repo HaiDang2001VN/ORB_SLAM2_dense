@@ -39,6 +39,10 @@ std::string formatInt(long num, int size) {
   return oss.str();
 };
 
+void LoadSettings(const string strSettingsFile)
+{
+    
+}
 namespace ORB_SLAM2
 {
 
@@ -99,6 +103,8 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
     cout << "Vocabulary loaded!" << endl << endl;
     printf("Vocabulary loaded in %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
 
+    
+    
     //Create KeyFrame Database
     mpKeyFrameDatabase = new KeyFrameDatabase(*mpVocabulary);
 
@@ -522,7 +528,133 @@ vector<cv::KeyPoint> System::GetTrackedKeyPointsUn()
     return mTrackedKeyPointsUn;
 }
 
-void System::CreateNVM(const string &filename)
+/*
+bool System::LoadNVM(const string &filename)
+{
+    //LOAD NVM
+    //Function Loads NVM from file and initializes map and keyframes.
+    vector<string> images;        //for loading images
+    vector<MapPoint *> vMPs_nvm;  //map points
+    vector<KeyFrame *> vpKFs_nvm; //key frames
+    ifstream f;
+    string filename = "ORB_SLAM2.nvm";
+    f.open(filename.c_str());
+    string header, n;
+    f >> header; //should have NVM_V3
+    cout << header << endl;
+    //now number of cameras
+    int num_cameras;
+    f >> num_cameras;
+    cout << num_cameras << endl;
+    vpKFs_nvm.resize(num_cameras); //to hold the existing KeyFrames
+    //create num_cameras KeyFrames!!
+    //
+    cv::Mat im_loaded, R;              //image loaded ,Rot
+    cv::Mat t(3, 1, CV_32F);           // translation
+    cv::Mat Tcw(4, 4, CV_32F);         //pose
+    vector<float> q(4), cam_center(3); //Quaternion
+    float k1, k2;                      //focal length and distortions
+    ////Settings
+    // Load camera parameters from settings file
+    float fx = fsSettings["Camera.fx"];
+    float fy = fsSettings["Camera.fy"];
+    float cx = fsSettings["Camera.cx"];
+    float cy = fsSettings["Camera.cy"];
+    cv::Mat K = cv::Mat::eye(3, 3, CV_32F);
+    K.at<float>(0, 0) = fx;
+    K.at<float>(1, 1) = fy;
+    K.at<float>(0, 2) = cx;
+    K.at<float>(1, 2) = cy;
+    cv::Mat DistCoef(4, 1, CV_32F);
+    DistCoef.at<float>(0) = fsSettings["Camera.k1"];
+    DistCoef.at<float>(1) = fsSettings["Camera.k2"];
+    DistCoef.at<float>(2) = fsSettings["Camera.p1"];
+    DistCoef.at<float>(3) = fsSettings["Camera.p2"];
+    const float k3 = fsSettings["Camera.k3"];
+    if (k3 != 0)
+    {
+        DistCoef.resize(5);
+        DistCoef.at<float>(4) = k3;
+    }
+    int bf = fsSettings["Camera.bf"];
+    float fps = fsSettings["Camera.fps"];
+    if (fps == 0)
+        fps = 30;
+
+    // Load ORB parameters
+    int nFeatures = fsSettings["ORBextractor.nFeatures"];
+    float fScaleFactor = fsSettings["ORBextractor.scaleFactor"];
+    int nLevels = fsSettings["ORBextractor.nLevels"];
+    int fIniThFAST = fsSettings["ORBextractor.iniThFAST"];
+    int fMinThFAST = fsSettings["ORBextractor.minThFAST"];
+
+    ORBextractor *ORBextractorLeft = new ORB_SLAM2::ORBextractor(nFeatures, fScaleFactor, nLevels, fIniThFAST, fMinThFAST);
+    //For Frame, we need extractor, vocabulary, K, distortion, bf and depth
+    //Create KeyFrame Database
+    mpKeyFrameDatabase = new KeyFrameDatabase(*mpVocabulary);
+    //Create the Map
+    mpMap = new Map();
+    for (int i = 0; i < num_cameras; i++)
+    {
+
+        //for each camera
+        f >> n >> fx >> q[3] >> q[0] >> q[1] >> q[2] >> //WXYZ
+            t.at<float>(0) >> t.at<float>(1) >> t.at<float>(2) >> k1 >> k2;
+        im_loaded = cv::imread(n); //read the image from disk
+        R = ORB_SLAM2::Converter::toRotation(q);
+        Tcw.rowRange(0, 3).colRange(0, 3) = R;
+        Tcw.rowRange(0, 3).col(3) = t;
+        //create Frame-Monocular Camera
+        //Frame(const cv::Mat &imGray, const double &timeStamp, ORBextractor* extractor,ORBVocabulary* voc, cv::Mat &K, cv::Mat &distCoef, const float &bf, const float &thDepth);
+        Frame cur = Frame(im_loaded, i + 1, ORBextractorLeft, mpVocabulary, K, DistCoef, bf, 0);
+        cur.ComputeBoW();
+        cur.mTcw = Tcw.clone();                                       //pose for the frame.
+        KeyFrame *pKF = new KeyFrame(cur, mpMap, mpKeyFrameDatabase); //create a KeyFrame
+        pKF->ComputeBoW();
+        pKF->SetPose(Tcw);
+        pKF->SetImage(im_loaded);
+        mpMap->AddKeyFrame(pKF);
+        //
+
+        // Create MapPoints and asscoiate to keyframes
+        for (size_t i = 0; i < mvIniMatches.size(); i++)
+        {
+            if (mvIniMatches[i] < 0)
+                continue;
+
+            //Create MapPoint.
+            cv::Mat worldPos(mvIniP3D[i]);
+
+            MapPoint *pMP = new MapPoint(worldPos, pKFcur, mpMap);
+
+            pKF->AddMapPoint(pMP, i);
+            pMP->AddObservation(pKFini, i);
+
+            pMP->ComputeDistinctiveDescriptors();
+            pMP->UpdateNormalAndDepth();
+
+            //Fill Current Frame structure
+            Frame.mvpMapPoints[mvIniMatches[i]] = pMP;
+            Frame.mvbOutlier[mvIniMatches[i]] = false;
+
+            //Add to Map
+            mpMap->AddMapPoint(pMP);
+        }
+
+        // Update Connections
+        pKF->UpdateConnections();
+        //
+        //cout << n << endl;
+    }
+    //Mappoints with KeyFrame
+
+    f.close();
+    //END LOAD NVM
+
+    return true;
+}
+*/
+void System::SaveNVM(const string &filename)
 {
     //Global BA 
     cout << "Starting GlobalBA!"<<endl;
@@ -531,7 +663,7 @@ void System::CreateNVM(const string &filename)
     cout<<endl<<"Saving NVM to "<<filename<<"---"<<endl;
     vector<MapPoint*> vMPs =mpMap->GetAllMapPoints();
     vector<KeyFrame*> vpKFs=mpMap->GetAllKeyFrames();
-    //sort(vpKFs.begin(),vpKFs.end(),KeyFrame::lId);
+    sort(vpKFs.begin(),vpKFs.end(),KeyFrame::lId);
         //--------------
         //  Export the Poses and the Features to a NVM file
         //--------------
@@ -552,7 +684,7 @@ void System::CreateNVM(const string &filename)
         //    with:
         //<Measurement> = <Image index> <Feature Index> <xy>
 
-        //1.------ Exort the cameras
+        //1.------ Export the cameras
         //1.1 count the amount of key frames
         int count_good_KF=0;
         for(size_t i=0; i<vpKFs.size(); i++)
@@ -658,6 +790,7 @@ void System::CreateNVM(const string &filename)
 
     
 }
+
 void System::DisplayKF(int KFid)
 {
     vector<KeyFrame*> vKFs=mpMap->GetAllKeyFrames();

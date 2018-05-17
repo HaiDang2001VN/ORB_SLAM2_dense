@@ -42,10 +42,15 @@ int main(int argc, char **argv)
     double tframe=0;
     while(cap.read(frame))
     {
+        if(tframe==200)
+        {
+                break;
+        }
         //cout<<tframe<<endl;
         //cap>>frame;
         //cv::imshow("video",frame);
-        //cv::resize(frame,rframe,cv::Size(1920,1080),0,0,CV_INTER_LANCZOS4);
+        //cv::rotate(frame, frame, 0);
+        //cv::resize(frame,rframe,cv::Size(640,480),0,0,CV_INTER_LANCZOS4);
 #ifdef COMPILEDWITHC11
         std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
         //auto t1 = std::chrono::system_clock::now();
@@ -63,9 +68,12 @@ int main(int argc, char **argv)
 #endif
         std::chrono::duration<double, std::milli> fp_ms1 = t2 - t1;
         if(int(tframe)%50==0)
-        cout<<"Frame: "<<tframe<<" finished in "<<fp_ms1.count() << " ms" << std::endl;
-        tframe++;
-        //cv::waitKey(1);
+        {cout<<"Frame: "<<tframe<<" finished in "<<fp_ms1.count() << " ms" << std::endl;}
+        tframe+=(1);
+        if (cv::waitKey(1) == 'q')
+        {
+                break;
+        }
         //usleep(1000);
     }
     //Done with the Video
@@ -75,13 +83,13 @@ int main(int argc, char **argv)
     // Stop all threads
     SLAM.Shutdown();
 
-    cout<<"Saving Trajectory to file"<<endl;
+    //cout<<"Saving Trajectory to file"<<endl;
     // Save camera trajectory
-    //SLAM.SaveKeyFrameTrajectoryTUM("KeyFrameTrajectory.txt");
+    //SLAM.SaveKeyFrameTrajectoryTUM("idrisKeyFrameTrajectory.txt");
 
-    //SLAM.CreatePCD("pointcloud15k.pcd");
+  //  SLAM.CreatePCD("idriscloud.pcd");
 
-    //SLAM.CreateNVM("ORB_SLAM2.nvm");
+   SLAM.SaveNVM("testing.nvm");
 
     //SLAM.DisplayKF(0);
     //Now for calling MVE
