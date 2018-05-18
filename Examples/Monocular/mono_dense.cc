@@ -8,7 +8,7 @@ Application for producing an NVM file for use with Visual SFM and MVE.
 #include<algorithm>
 #include<fstream>
 #include<chrono>
-#include<cstdlib> //For system calls
+//#include<cstdlib> //For system calls
 
 #include<opencv2/core/core.hpp>
 #include<System.h>
@@ -42,10 +42,6 @@ int main(int argc, char **argv)
     double tframe=0;
     while(cap.read(frame))
     {
-        if(tframe==200)
-        {
-                break;
-        }
         //cout<<tframe<<endl;
         //cap>>frame;
         //cv::imshow("video",frame);
@@ -67,14 +63,14 @@ int main(int argc, char **argv)
         std::chrono::monotonic_clock::time_point t2 = std::chrono::monotonic_clock::now();
 #endif
         std::chrono::duration<double, std::milli> fp_ms1 = t2 - t1;
-        if(int(tframe)%50==0)
-        {cout<<"Frame: "<<tframe<<" finished in "<<fp_ms1.count() << " ms" << std::endl;}
-        tframe+=(1);
-        if (cv::waitKey(1) == 'q')
+        if(int(tframe*15.0)%50==0)
+        {cout<<"Frame: "<<tframe*15.0<<" finished in "<<fp_ms1.count() << " ms" << std::endl;}
+        tframe+=(1.0/15);
+        /*if (cv::waitKey(1) == 'q')
         {
                 break;
-        }
-        //usleep(1000);
+        }*/
+        usleep(1000);
     }
     //Done with the Video
     cout<<"Done with Video processing"<<endl;
@@ -87,9 +83,9 @@ int main(int argc, char **argv)
     // Save camera trajectory
     //SLAM.SaveKeyFrameTrajectoryTUM("idrisKeyFrameTrajectory.txt");
 
-  //  SLAM.CreatePCD("idriscloud.pcd");
+   SLAM.CreatePCD("testingdaniel2000.pcd");
 
-   SLAM.SaveNVM("testing.nvm");
+   SLAM.SaveNVM("testingdaniel2000.nvm");
 
     //SLAM.DisplayKF(0);
     //Now for calling MVE
