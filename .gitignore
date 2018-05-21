@@ -33,3 +33,5 @@ Video/DJI_0128.MOV
 chairtest.zip
 ORB_SLAM2_dense.zip
 ORB_SLAM2_dense_chairtest.zip
+*.zip
+*.yml

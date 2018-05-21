@@ -63,9 +63,9 @@ int main(int argc, char **argv)
         std::chrono::monotonic_clock::time_point t2 = std::chrono::monotonic_clock::now();
 #endif
         std::chrono::duration<double, std::milli> fp_ms1 = t2 - t1;
-        if(int(tframe*15.0)%50==0)
-        {cout<<"Frame: "<<tframe*15.0<<" finished in "<<fp_ms1.count() << " ms" << std::endl;}
-        tframe+=(1.0/15);
+        if(int(tframe*30.0)%50==0)
+        {cout<<"Frame: "<<tframe*30.0<<" finished in "<<fp_ms1.count() << " ms" << std::endl;}
+        tframe+=(1.0/30);
         /*if (cv::waitKey(1) == 'q')
         {
                 break;
@@ -83,9 +83,9 @@ int main(int argc, char **argv)
     // Save camera trajectory
     //SLAM.SaveKeyFrameTrajectoryTUM("idrisKeyFrameTrajectory.txt");
 
-   SLAM.CreatePCD("testingdaniel2000.pcd");
+   SLAM.CreatePCD("testingdaniel30002_oldvocab.pcd");
 
-   SLAM.SaveNVM("testingdaniel2000.nvm");
+   SLAM.SaveNVM("testingdaniel30002_oldvocab.nvm");
 
     //SLAM.DisplayKF(0);
     //Now for calling MVE

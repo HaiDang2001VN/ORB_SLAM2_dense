@@ -45,9 +45,11 @@ int main(int argc, char **argv) {
   cout << "BoW load/save benchmark" << endl;
   ORB_SLAM2::ORBVocabulary* voc = new ORB_SLAM2::ORBVocabulary();
   cout<<"Vocabulary Pointer Created"<<endl;
-  load_as_text(voc, "Vocabulary/ORBvoc.txt");
+  //load_as_text(voc, "Vocabulary/ORBvoc.txt");
+  //load_as_binary(voc,"../Vocabulary/ORBvoc.bin");
+  load_as_xml(voc,"../Vocabulary/small_voc_idris.yml");
   cout<<"TextFile Loaded"<<endl;
-  save_as_binary(voc, "Vocabulary/ORBvoc.bin");
-  cout<<"Binary File Created"<<endl;
+  save_as_binary(voc, "../Vocabulary/ORBvocidris.bin");
+  //cout<<"Binary File Created"<<endl;
   return 0;
 }
