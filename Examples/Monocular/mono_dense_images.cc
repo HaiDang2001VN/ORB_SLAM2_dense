@@ -11,6 +11,7 @@ Application for producing an NVM file for use with Visual SFM and MVE.
 #include<cstdlib> //For system calls
 
 #include<opencv2/core/core.hpp>
+#include<opencv2/core/utility.hpp>
 #include<System.h>
 //#include<Optimizer.h>
 using namespace std;
