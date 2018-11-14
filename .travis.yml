@@ -41,7 +41,7 @@ before_install:
 
 install:
   - cmake ..
-  - cmake --build .
+  - make -j6
   - sudo make install
 
 before_script:
