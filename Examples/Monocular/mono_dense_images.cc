@@ -11,7 +11,6 @@ Application for producing an NVM file for use with Visual SFM and MVE.
 #include<cstdlib> //For system calls
 
 #include<opencv2/core/core.hpp>
-#include<opencv2/core/utility.hpp>
 #include<System.h>
 //#include<Optimizer.h>
 using namespace std;
@@ -25,7 +24,7 @@ int main(int argc, char **argv)
     }
 
     vector<cv::String> fn;
-    glob(string(argv[3])+"/*.jpg", fn, false);
+    cv::glob(string(argv[3])+"/*.jpg", fn, false);
     // Create SLAM system. It initializes all system threads and gets ready to process frames.
     ORB_SLAM2::System SLAM(argv[1],argv[2],ORB_SLAM2::System::MONOCULAR,true);
 
