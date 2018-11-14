@@ -1,0 +1,51 @@
+os: linux
+
+language: python
+
+python: "3.5"
+
+dist: xenial
+
+sudo: require
+
+addons:
+  apt:
+    update: true
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - gcc
+      - g++
+      - libopencv-dev
+      - libblas-dev
+      - liblapack-dev
+      - liblapacke-dev
+      - libboost-all-dev
+      - libeigen3-dev
+      - libcgal-dev
+      - libglew-dev
+      - freeglut3-dev
+      - libjpeg-dev
+      - libpng-dev
+      - libtiff-dev
+      - libopenexr-dev
+before_install:
+  - sudo apt-get install libavcodec-dev libavutil-dev libavformat-dev libswscale-dev libavdevice-dev cmake
+  - sudo ln -s /usr/bin/gcc /usr/local/bin/gcc
+  - sudo ln -s /usr/bin/g++ /usr/local/bin/g++
+  - export CC=/usr/bin/gcc
+  - export CXX=/usr/bin/g++
+  - git clone https://github.com/stevenlovegrove/Pangolin.git
+  - cd Pangolin
+  - mkdir build && cd build
+
+install:
+  - cmake ..
+  - cmake --build .
+  - sudo make install
+
+before_script:
+  - cd ../..
+script:
+  - chmod +x build.sh
+  - ./build.sh
